@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { urls } from "./testPages";
 
 (async () => {
   const browser = await chromium.launch({
@@ -7,23 +8,32 @@ import { chromium } from "playwright";
 
   const page = await browser.newPage();
 
-  // example url:s
+  const url = urls[0];
 
-  // version 1:
-  // await page.goto("https://thewoksoflife.com/dan-dan-noodles/");
-  // await page.goto("https://lindseyeatsla.com/spicy-sichuan-noodles/");
-
-  // version 2:
-  await page.goto("https://www.ica.se/recept/pannkakor-grundsmet-2083/");
-
-  const jsonLdData: any = await page.evaluate(() => {
-    const scriptTag = document.querySelector(
+  // get all scripts of type "application/ld+json" from the provided url
+  const jsonLdData: string[] = await page.evaluate(() => {
+    const scriptTags: NodeListOf<HTMLScriptElement> = document.querySelectorAll(
       'script[type="application/ld+json"]'
     );
-    return scriptTag ? scriptTag.innerHTML : null;
+    const data: string[] = [];
+
+    scriptTags.forEach((scriptTag: HTMLScriptElement) => {
+      data.push(scriptTag.innerHTML);
+    });
+
+    return data;
   });
 
-  const parsed = JSON.parse(jsonLdData);
+  let scriptWithRecipeData: string = "";
+
+  // find the correct json string
+  jsonLdData.forEach((jsonString: string) => {
+    if (jsonString.includes("recipeIngredient")) {
+      scriptWithRecipeData = jsonString;
+    }
+  });
+
+  const parsed = JSON.parse(scriptWithRecipeData);
 
   if (jsonLdData) {
     console.log(true);
@@ -31,12 +41,31 @@ import { chromium } from "playwright";
     console.log(false);
   }
 
+  // console.log(parsed);
+
   if (parsed["@graph"]) {
-    console.log(parsed["@graph"][parsed["@graph"].length - 1].recipeIngredient);
-    console.log(
-      parsed["@graph"][parsed["@graph"].length - 1].recipeInstructions
-    );
+    console.log("version graph");
+
+    const graph = parsed["@graph"];
+
+    type GraphObject = {
+      "@type": string | Array<any>;
+    };
+
+    let arrayKey: number = 0;
+
+    // get the correct object
+    graph.forEach((obj: GraphObject) => {
+      if (obj["@type"] === "Recipe") {
+        arrayKey = graph.indexOf(obj);
+      }
+    });
+
+    console.log(graph[arrayKey].recipeIngredient);
+    console.log(graph[arrayKey].recipeInstructions);
   } else if (parsed.recipeIngredient && parsed.recipeInstructions) {
+    console.log("version root");
+
     console.log(parsed.recipeIngredient);
     console.log(parsed.recipeInstructions);
   } else {
