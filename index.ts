@@ -10,7 +10,9 @@ import { urls } from "./testPages";
 
   const url = urls[0];
 
-  // get all scripts of type "application/ld+json" from the provided url
+  await page.goto(url);
+
+  // Get all scripts of type "application/ld+json" from the provided url
   const jsonLdData: string[] = await page.evaluate(() => {
     const scriptTags: NodeListOf<HTMLScriptElement> = document.querySelectorAll(
       'script[type="application/ld+json"]'
@@ -26,13 +28,14 @@ import { urls } from "./testPages";
 
   let scriptWithRecipeData: string = "";
 
-  // find the correct json string
+  // Find the correct json string
   jsonLdData.forEach((jsonString: string) => {
     if (jsonString.includes("recipeIngredient")) {
       scriptWithRecipeData = jsonString;
     }
   });
 
+  // Parse the correct json string
   const parsed = JSON.parse(scriptWithRecipeData);
 
   if (jsonLdData) {
@@ -41,8 +44,8 @@ import { urls } from "./testPages";
     console.log(false);
   }
 
-  // console.log(parsed);
-
+  // Check if desired data is on graph or root level
+  //On graph level
   if (parsed["@graph"]) {
     console.log("version graph");
 
@@ -54,7 +57,7 @@ import { urls } from "./testPages";
 
     let arrayKey: number = 0;
 
-    // get the correct object
+    // Get the recipe object
     graph.forEach((obj: GraphObject) => {
       if (obj["@type"] === "Recipe") {
         arrayKey = graph.indexOf(obj);
@@ -63,7 +66,8 @@ import { urls } from "./testPages";
 
     console.log(graph[arrayKey].recipeIngredient);
     console.log(graph[arrayKey].recipeInstructions);
-  } else if (parsed.recipeIngredient && parsed.recipeInstructions) {
+  } // On root level
+  else if (parsed.recipeIngredient && parsed.recipeInstructions) {
     console.log("version root");
 
     console.log(parsed.recipeIngredient);
