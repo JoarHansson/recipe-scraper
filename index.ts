@@ -1,15 +1,13 @@
-import { chromium } from "playwright";
+import { chromium, Browser, Page } from "playwright";
 import { urls } from "./testPages";
 
 (async () => {
-  const browser = await chromium.launch({
+  const browser: Browser = await chromium.launch({
     headless: true,
   });
 
-  const page = await browser.newPage();
-
-  const url = urls[0];
-
+  const page: Page = await browser.newPage();
+  const url: string = urls[0];
   await page.goto(url);
 
   // Get all scripts of type "application/ld+json" from the provided url
@@ -69,7 +67,6 @@ import { urls } from "./testPages";
   } // On root level
   else if (parsed.recipeIngredient && parsed.recipeInstructions) {
     console.log("version root");
-
     console.log(parsed.recipeIngredient);
     console.log(parsed.recipeInstructions);
   } else {
