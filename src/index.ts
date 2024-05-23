@@ -1,5 +1,5 @@
-import { chromium, Browser, Page } from "playwright";
-import { urls } from "./testPages";
+import { Browser, chromium, Page } from "playwright";
+import { urls } from "./testPages.js";
 
 (async () => {
   const browser: Browser = await chromium.launch({
@@ -15,6 +15,7 @@ import { urls } from "./testPages";
     const scriptTags: NodeListOf<HTMLScriptElement> = document.querySelectorAll(
       'script[type="application/ld+json"]'
     );
+
     const data: string[] = [];
 
     scriptTags.forEach((scriptTag: HTMLScriptElement) => {
