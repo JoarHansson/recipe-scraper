@@ -1,4 +1,5 @@
 import express from "express";
+import { getScrapedRecipe } from "./functions.js";
 
 const app = express();
 app.use(express.json());
@@ -11,7 +12,9 @@ app.post("/recipe", async (req, res) => {
     return res.status(400).send("URL is required");
   }
 
-  res.send(`Checked`);
+  const data = await getScrapedRecipe(url);
+
+  res.send(data);
 });
 
 const PORT = process.env.PORT || 3000;
