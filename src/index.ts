@@ -1,3 +1,4 @@
+import he from "he";
 import { Browser, chromium, Page } from "playwright";
 import { urls } from "./testPages.js";
 
@@ -63,13 +64,34 @@ import { urls } from "./testPages.js";
       }
     });
 
-    console.log(graph[arrayKey].recipeIngredient);
-    console.log(graph[arrayKey].recipeInstructions);
+    const ingredientsData = graph[arrayKey].recipeIngredient;
+    const instructionsData = graph[arrayKey].recipeInstructions;
+
+    console.log(ingredientsData);
+    console.log(instructionsData);
+
+    // this logic can be re-used for recipeInstructions when we have it as a string[]
+    const parsedIngredients: string[] = ingredientsData.map(
+      (ingredient: string) => {
+        return he.decode(ingredient);
+      }
+    );
+
+    console.log(parsedIngredients);
   } // On root level
   else if (parsed.recipeIngredient && parsed.recipeInstructions) {
     console.log("version root");
     console.log(parsed.recipeIngredient);
     console.log(parsed.recipeInstructions);
+
+    // this logic can be re-used for recipeInstructions when we have it as a string[]
+    const parsedIngredients: string[] = parsed.recipeIngredient.map(
+      (ingredient: string) => {
+        return he.decode(ingredient);
+      }
+    );
+
+    console.log(parsedIngredients);
   } else {
     console.log("data not found");
   }

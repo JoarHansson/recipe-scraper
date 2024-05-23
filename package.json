@@ -19,7 +19,9 @@
   },
   "dependencies": {
     "@types/express": "^4.17.21",
+    "@types/he": "^1.2.3",
     "@types/node": "^20.12.12",
+    "he": "^1.2.0",
     "express": "^4.19.2",
     "playwright": "^1.44.0"
   }
