@@ -7,7 +7,7 @@ import { urls } from "./testPages";
   });
 
   const page: Page = await browser.newPage();
-  const url: string = urls[0];
+  const url: string = urls[10];
   await page.goto(url);
 
   // Get all scripts of type "application/ld+json" from the provided url
@@ -42,6 +42,20 @@ import { urls } from "./testPages";
     console.log(false);
   }
 
+  // Type for instruction object
+  type Instruction = {
+    text: string;
+    name?: string;
+    url?: string; // Not always present
+  };
+
+  //Function to generate array of recipeInstructions
+  function generateInstructionsArray(
+    recipeInstructions: Instruction[]
+  ): string[] {
+    return recipeInstructions.map((instruction) => instruction.text);
+  }
+
   // Check if desired data is on graph or root level
   //On graph level
   if (parsed["@graph"]) {
@@ -62,13 +76,22 @@ import { urls } from "./testPages";
       }
     });
 
-    console.log(graph[arrayKey].recipeIngredient);
-    console.log(graph[arrayKey].recipeInstructions);
+    const ingredients: string[] = graph[arrayKey].recipeIngredient;
+    const instructions: string[] = generateInstructionsArray(
+      graph[arrayKey].recipeInstructions
+    );
+    console.log(ingredients);
+    console.log(instructions);
   } // On root level
   else if (parsed.recipeIngredient && parsed.recipeInstructions) {
     console.log("version root");
-    console.log(parsed.recipeIngredient);
-    console.log(parsed.recipeInstructions);
+
+    const ingredients: string[] = parsed.recipeIngredient;
+    const instructions: string[] = generateInstructionsArray(
+      parsed.recipeInstructions
+    );
+    console.log(ingredients);
+    console.log(instructions);
   } else {
     console.log("data not found");
   }
