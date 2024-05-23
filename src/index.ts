@@ -8,7 +8,7 @@ import { urls } from "./testPages.js";
   });
 
   const page: Page = await browser.newPage();
-  const url: string = urls[2];
+  const url: string = urls[8];
   await page.goto(url);
 
   // Get all scripts of type "application/ld+json" from the provided url
@@ -58,6 +58,11 @@ import { urls } from "./testPages.js";
     return recipeInstructions.map((instruction) => instruction.text);
   }
 
+  // Function to decode ingredients and instructions
+  function decodeData(data: string[]): string[] {
+    return data.map((item: string) => he.decode(item));
+  }
+
   // Check if desired data is on graph or root level
   //On graph level
   if (parsed["@graph"]) {
@@ -83,20 +88,11 @@ import { urls } from "./testPages.js";
       graph[arrayKey].recipeInstructions
     );
 
-    // this logic can be re-used for recipeInstructions when we have it as a string[]
-    const encodedIngredients: string[] = ingredientsData.map(
-      (ingredient: string) => {
-        return he.decode(ingredient);
-      }
-    );
+    const decodeIngredients: string[] = decodeData(ingredientsData);
+    const decodeInstructions: string[] = decodeData(instructionsData);
 
-    const encodedInstructions: string[] = instructionsData.map(
-      (instruction: string) => {
-        return he.decode(instruction);
-      }
-    );
-    console.log(encodedIngredients);
-    console.log(encodedInstructions);
+    console.log(decodeIngredients);
+    console.log(decodeInstructions);
   } // On root level
   else if (parsed.recipeIngredient && parsed.recipeInstructions) {
     console.log("version root");
@@ -106,21 +102,11 @@ import { urls } from "./testPages.js";
       parsed.recipeInstructions
     );
 
-    // this logic can be re-used for recipeInstructions when we have it as a string[]
-    const encodedIngredients: string[] = ingredientsData.map(
-      (ingredient: string) => {
-        return he.decode(ingredient);
-      }
-    );
+    const decodeIngredients: string[] = decodeData(ingredientsData);
+    const decodeInstructions: string[] = decodeData(instructionsData);
 
-    const encodedInstructions: string[] = instructionsData.map(
-      (instruction: string) => {
-        return he.decode(instruction);
-      }
-    );
-
-    console.log(encodedIngredients);
-    console.log(encodedInstructions);
+    console.log(decodeIngredients);
+    console.log(decodeInstructions);
   } else {
     console.log("data not found");
   }
