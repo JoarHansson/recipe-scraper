@@ -1,14 +1,12 @@
 import he from "he";
 import { Browser, chromium, Page } from "playwright";
-import { urls } from "./testPages.js";
 
-(async () => {
+export const getScrapedRecipe = async (url: string) => {
   const browser: Browser = await chromium.launch({
     headless: true,
   });
 
   const page: Page = await browser.newPage();
-  const url: string = urls[0];
   await page.goto(url);
 
   // Get all scripts of type "application/ld+json" from the provided url
@@ -67,9 +65,6 @@ import { urls } from "./testPages.js";
     const ingredientsData = graph[arrayKey].recipeIngredient;
     const instructionsData = graph[arrayKey].recipeInstructions;
 
-    console.log(ingredientsData);
-    console.log(instructionsData);
-
     // this logic can be re-used for recipeInstructions when we have it as a string[]
     const parsedIngredients: string[] = ingredientsData.map(
       (ingredient: string) => {
@@ -77,12 +72,10 @@ import { urls } from "./testPages.js";
       }
     );
 
-    console.log(parsedIngredients);
+    return parsedIngredients;
   } // On root level
   else if (parsed.recipeIngredient && parsed.recipeInstructions) {
     console.log("version root");
-    console.log(parsed.recipeIngredient);
-    console.log(parsed.recipeInstructions);
 
     // this logic can be re-used for recipeInstructions when we have it as a string[]
     const parsedIngredients: string[] = parsed.recipeIngredient.map(
@@ -91,10 +84,10 @@ import { urls } from "./testPages.js";
       }
     );
 
-    console.log(parsedIngredients);
+    return parsedIngredients;
   } else {
     console.log("data not found");
   }
 
   await browser.close();
-})();
+};
