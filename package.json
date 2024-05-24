@@ -7,7 +7,6 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
-    "server": "tsx watch src/server.ts",
     "watch": "tsx watch src/index.ts"
   },
   "keywords": [],
