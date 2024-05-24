@@ -1,5 +1,6 @@
 import he from "he";
 import { Browser, chromium, Page } from "playwright";
+import { decode } from "punycode";
 
 // Type for instruction object
 type Instruction = {
@@ -23,6 +24,8 @@ function generateInstructionsArray(
 function decodeData(data: string[]): string[] {
   return data.map((item: string) => he.decode(item));
 }
+
+//TODO JULIA: Write function for string or object array logic
 
 export const getScrapedRecipe = async (url: string) => {
   try {
@@ -87,6 +90,8 @@ export const getScrapedRecipe = async (url: string) => {
         graph[arrayKey].recipeInstructions
       );
 
+      //TODO JULIA: Add function for string or object array logic
+
       const decodeIngredients: string[] = decodeData(ingredientsData);
       const decodeInstructions: string[] = decodeData(instructionsData);
 
@@ -99,9 +104,19 @@ export const getScrapedRecipe = async (url: string) => {
       console.log("version root");
 
       const ingredientsData: string[] = parsed.recipeIngredient;
-      const instructionsData: string[] = generateInstructionsArray(
-        parsed.recipeInstructions
-      );
+
+      let instructionsData: string[];
+      if (
+        Array.isArray(parsed.recipeInstructions) &&
+        parsed.recipeInstructions.length > 0 &&
+        typeof parsed.recipeInstructions[0] === "object"
+      ) {
+        // If recipeInstructions is an array of objects, process it with generateInstructionsArray
+        instructionsData = generateInstructionsArray(parsed.recipeInstructions);
+      } else {
+        // Otherwise, use it as is
+        instructionsData = parsed.recipeInstructions;
+      }
 
       const decodeIngredients: string[] = decodeData(ingredientsData);
       const decodeInstructions: string[] = decodeData(instructionsData);
