@@ -24,7 +24,13 @@ function decodeData(data: string[]): string[] {
   return data.map((item: string) => he.decode(item));
 }
 
-export const getScrapedRecipe = async (url: string) => {
+// function to use in catch blocks
+export function getErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
+export async function getScrapedRecipe(url: string) {
   try {
     const browser: Browser = await chromium.launch({
       headless: true,
@@ -117,6 +123,6 @@ export const getScrapedRecipe = async (url: string) => {
     await browser.close();
   } catch (error) {
     console.error(error);
-    return error;
+    return { message: getErrorMessage(error) };
   }
-};
+}
