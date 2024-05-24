@@ -1,6 +1,29 @@
 import he from "he";
 import { Browser, chromium, Page } from "playwright";
 
+// Type for instruction object
+type Instruction = {
+  text: string;
+  name?: string;
+  url?: string; // Not always present
+};
+
+type GraphObject = {
+  "@type": string | Array<any>;
+};
+
+//Function to generate array of recipeInstructions
+function generateInstructionsArray(
+  recipeInstructions: Instruction[]
+): string[] {
+  return recipeInstructions.map((instruction) => instruction.text);
+}
+
+// Function to decode ingredients and instructions
+function decodeData(data: string[]): string[] {
+  return data.map((item: string) => he.decode(item));
+}
+
 export const getScrapedRecipe = async (url: string) => {
   try {
     const browser: Browser = await chromium.launch({
@@ -50,10 +73,6 @@ export const getScrapedRecipe = async (url: string) => {
 
       const graph = parsed["@graph"];
 
-      type GraphObject = {
-        "@type": string | Array<any>;
-      };
-
       let arrayKey: number = 0;
 
       // Get the recipe object
@@ -64,28 +83,33 @@ export const getScrapedRecipe = async (url: string) => {
       });
 
       const ingredientsData = graph[arrayKey].recipeIngredient;
-      const instructionsData = graph[arrayKey].recipeInstructions;
-
-      // this logic can be re-used for recipeInstructions when we have it as a string[]
-      const parsedIngredients: string[] = ingredientsData.map(
-        (ingredient: string) => {
-          return he.decode(ingredient);
-        }
+      const instructionsData: string[] = generateInstructionsArray(
+        graph[arrayKey].recipeInstructions
       );
 
-      return parsedIngredients;
+      const decodeIngredients: string[] = decodeData(ingredientsData);
+      const decodeInstructions: string[] = decodeData(instructionsData);
+
+      return {
+        ingredients: decodeIngredients,
+        instructions: decodeInstructions,
+      };
     } // On root level
     else if (parsed.recipeIngredient && parsed.recipeInstructions) {
       console.log("version root");
 
-      // this logic can be re-used for recipeInstructions when we have it as a string[]
-      const parsedIngredients: string[] = parsed.recipeIngredient.map(
-        (ingredient: string) => {
-          return he.decode(ingredient);
-        }
+      const ingredientsData: string[] = parsed.recipeIngredient;
+      const instructionsData: string[] = generateInstructionsArray(
+        parsed.recipeInstructions
       );
 
-      return parsedIngredients;
+      const decodeIngredients: string[] = decodeData(ingredientsData);
+      const decodeInstructions: string[] = decodeData(instructionsData);
+
+      return {
+        ingredients: decodeIngredients,
+        instructions: decodeInstructions,
+      };
     } else {
       console.log("data not found");
     }
