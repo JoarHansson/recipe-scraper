@@ -9,8 +9,12 @@ type Instruction = {
 };
 
 type GraphObject = {
-  "@type": string | Array<any>;
+  "@type": string | any[];
+  recipeIngredient: string[];
+  recipeInstructions: Instruction[];
 };
+
+type RawRecipeData = GraphObject | { "@graph": GraphObject[] };
 
 //Function to generate array of recipeInstructions
 function generateInstructionsArray(
@@ -24,7 +28,9 @@ function decodeData(data: string[]): string[] {
   return data.map((item: string) => he.decode(item));
 }
 
-export const getScrapedRecipe = async (url: string) => {
+export const getScrapedRecipe = async (
+  url: string
+): Promise<{ ingredients: string[]; instructions: string[] }> => {
   try {
     const browser: Browser = await chromium.launch({
       headless: true,
@@ -47,6 +53,8 @@ export const getScrapedRecipe = async (url: string) => {
       return data;
     });
 
+    await browser.close();
+
     let scriptWithRecipeData: string = "";
 
     // Find the correct json string
@@ -64,59 +72,40 @@ export const getScrapedRecipe = async (url: string) => {
     }
 
     // Parse the correct json string
-    const parsed = JSON.parse(scriptWithRecipeData);
+    const rawRecipeData: RawRecipeData = JSON.parse(scriptWithRecipeData);
 
-    // Check if desired data is on graph or root level
-    //On graph level
-    if (parsed["@graph"]) {
-      console.log("version graph");
+    let recipeData: GraphObject | undefined;
 
-      const graph = parsed["@graph"];
-
-      let arrayKey: number = 0;
+    //
+    if ("@graph" in rawRecipeData) {
+      const graph: GraphObject[] = rawRecipeData["@graph"];
 
       // Get the recipe object
-      graph.forEach((obj: GraphObject) => {
-        if (obj["@type"] === "Recipe") {
-          arrayKey = graph.indexOf(obj);
-        }
+      recipeData = graph.find((obj: GraphObject) => {
+        return obj["@type"] === "Recipe";
       });
-
-      const ingredientsData = graph[arrayKey].recipeIngredient;
-      const instructionsData: string[] = generateInstructionsArray(
-        graph[arrayKey].recipeInstructions
-      );
-
-      const decodeIngredients: string[] = decodeData(ingredientsData);
-      const decodeInstructions: string[] = decodeData(instructionsData);
-
-      return {
-        ingredients: decodeIngredients,
-        instructions: decodeInstructions,
-      };
-    } // On root level
-    else if (parsed.recipeIngredient && parsed.recipeInstructions) {
-      console.log("version root");
-
-      const ingredientsData: string[] = parsed.recipeIngredient;
-      const instructionsData: string[] = generateInstructionsArray(
-        parsed.recipeInstructions
-      );
-
-      const decodeIngredients: string[] = decodeData(ingredientsData);
-      const decodeInstructions: string[] = decodeData(instructionsData);
-
-      return {
-        ingredients: decodeIngredients,
-        instructions: decodeInstructions,
-      };
     } else {
-      console.log("data not found");
+      recipeData = rawRecipeData;
     }
 
-    await browser.close();
+    if (!recipeData) {
+      throw new Error("no recipedata found");
+    }
+
+    const ingredientsData = recipeData.recipeIngredient;
+    const instructionsData: string[] = generateInstructionsArray(
+      recipeData.recipeInstructions
+    );
+
+    const decodeIngredients: string[] = decodeData(ingredientsData);
+    const decodeInstructions: string[] = decodeData(instructionsData);
+
+    return {
+      ingredients: decodeIngredients,
+      instructions: decodeInstructions,
+    };
   } catch (error) {
     console.error(error);
-    return error;
+    throw error;
   }
 };
