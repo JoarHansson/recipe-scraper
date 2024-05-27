@@ -19,11 +19,11 @@ export const urls: string[] = [
   "https://www.bbc.co.uk/food/recipes/spicy_sichuan_noodles_79051",
   "https://matinspo.se/recipe/kramiga-nudlar-med-wokade-gronsaker/",
   "https://www.inspiredtaste.net/36554/veggie-burger-recipe/",
+  "https://www.koket.se/stekta-nudlar-filip-poons-recept",
 
   // NOT WORKING EXAMPLES:
   // data not found / working but dataformat is slighly wrong:
   // array wrapping the object
-  "https://www.koket.se/stekta-nudlar-filip-poons-recept",
   "https://www.allrecipes.com/recipe/72657/best-hamburger-ever/",
   // recipeInstructions is only a string
   "https://www.scan.se/recept/605/wokade-kottbullar-med-sweet-chili-och-stekta-nudlar/",

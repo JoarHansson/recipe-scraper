@@ -1,6 +1,5 @@
 import he from "he";
 import { Browser, chromium, Page } from "playwright";
-import { decode } from "punycode";
 
 // Type for instruction object
 type Instruction = {
@@ -15,7 +14,15 @@ type GraphObject = {
   recipeInstructions: Instruction[];
 };
 
-type RawRecipeData = GraphObject | { "@graph": GraphObject[] };
+type RawRecipeData = GraphObject | { "@graph": GraphObject[] } | GraphObject[];
+
+function findGraphObjectWithRecipeData(inputData: GraphObject[]) {
+  const result = inputData.find((obj: GraphObject) => {
+    return obj["@type"] === "Recipe";
+  });
+
+  return result;
+}
 
 //Function to generate array of recipeInstructions
 function generateStringArray(recipeInstructions: Instruction[]): string[] {
@@ -35,7 +42,9 @@ export function getErrorMessage(error: unknown) {
 
 export const getScrapedRecipe = async (
   url: string
-): Promise<{ ingredients: string[]; instructions: string[] }> => {
+): Promise<
+  { ingredients: string[]; instructions: string[] } | { message: string }
+> => {
   try {
     const browser: Browser = await chromium.launch({
       headless: true,
@@ -79,16 +88,14 @@ export const getScrapedRecipe = async (
     // Parse the correct json string
     const rawRecipeData: RawRecipeData = JSON.parse(scriptWithRecipeData);
 
-    let recipeData: GraphObject | undefined;
+    let recipeData: GraphObject | GraphObject[] | undefined;
 
-    //
     if ("@graph" in rawRecipeData) {
       const graph: GraphObject[] = rawRecipeData["@graph"];
 
-      // Get the recipe object
-      recipeData = graph.find((obj: GraphObject) => {
-        return obj["@type"] === "Recipe";
-      });
+      recipeData = findGraphObjectWithRecipeData(graph);
+    } else if (Array.isArray(rawRecipeData)) {
+      recipeData = findGraphObjectWithRecipeData(rawRecipeData);
     } else {
       recipeData = rawRecipeData;
     }
@@ -132,7 +139,6 @@ export const getScrapedRecipe = async (
       instructions: decodedInstructions,
     };
   } catch (error) {
-    console.error(error);
-    throw error;
+    return { message: getErrorMessage(error) };
   }
 };
