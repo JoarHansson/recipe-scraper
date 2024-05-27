@@ -114,21 +114,29 @@ export const getScrapedRecipe = async (
     ) {
       instructionsArray = recipeData.recipeInstructions;
     } else {
-      throw new Error("Instructions is not an correct array or it is empty");
+      throw new Error("Instructions is not a correct array, or it is empty");
     }
 
-    if (instructionsArray.length > 0) {
-      if (typeof instructionsArray[0] === "string") {
-        instructionsData = instructionsArray as string[];
-      } else if (typeof instructionsArray[0] === "object") {
-        instructionsData = generateStringArray(instructionsArray);
-      } else {
-        throw new Error(
-          "Instructions must be of either type objects or strings"
-        );
-      }
+    // the array of instructions comes wither as an array of strings,
+    // or as an object which should fall under "HowToStep" or "HowToSection" below
+    // see https://developers.google.com/search/docs/appearance/structured-data/recipe#recipe-properties
+    if (typeof instructionsArray[0] === "string") {
+      instructionsData = instructionsArray as string[];
+    } else if (
+      typeof instructionsArray[0] === "object" &&
+      instructionsArray[0]["@type"] === "HowToSection"
+    ) {
+      instructionsArray.forEach((section) => {
+        const items = generateStringArray(section.itemListElement);
+        instructionsData.push(...items);
+      });
+    } else if (
+      typeof instructionsArray[0] === "object" &&
+      instructionsArray[0]["@type"] === "HowToStep"
+    ) {
+      instructionsData = generateStringArray(instructionsArray);
     } else {
-      throw new Error("Instructions array is empty");
+      throw new Error("Instructions must be of either type objects or strings");
     }
 
     const decodedIngredients: string[] = decodeData(ingredientsData);
@@ -139,6 +147,7 @@ export const getScrapedRecipe = async (
       instructions: decodedInstructions,
     };
   } catch (error) {
+    console.error(error);
     return { message: getErrorMessage(error) };
   }
 };
