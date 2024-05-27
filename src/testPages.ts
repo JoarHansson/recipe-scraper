@@ -9,6 +9,7 @@ export const urls: string[] = [
   "https://www.spoonforkbacon.com/garlic-noodles/",
   "https://natashaskitchen.com/perfect-burger-recipe/",
   "https://www.aspicyperspective.com/best-hamburger-patty-recipe/",
+  "https://www.indianhealthyrecipes.com/veg-noodles-recipe/",
   // version root:
   "https://www.ica.se/recept/pannkakor-grundsmet-2083/",
   "https://www.onceuponachef.com/recipes/smash-burgers.html",
@@ -19,16 +20,14 @@ export const urls: string[] = [
   "https://www.bbc.co.uk/food/recipes/spicy_sichuan_noodles_79051",
   "https://matinspo.se/recipe/kramiga-nudlar-med-wokade-gronsaker/",
   "https://www.inspiredtaste.net/36554/veggie-burger-recipe/",
+  "https://www.koket.se/stekta-nudlar-filip-poons-recept",
 
   // NOT WORKING EXAMPLES:
   // data not found / working but dataformat is slighly wrong:
   // array wrapping the object
-  "https://www.koket.se/stekta-nudlar-filip-poons-recept",
   "https://www.allrecipes.com/recipe/72657/best-hamburger-ever/",
   // recipeInstructions is only a string
   "https://www.scan.se/recept/605/wokade-kottbullar-med-sweet-chili-och-stekta-nudlar/",
-  // recipeInstructions is an array of objects, containing additional objects
-  "https://www.indianhealthyrecipes.com/veg-noodles-recipe/",
   // Has the script tag, but no recipe data
   "https://www.lyckasmedmat.se/blog/hamburgare-n269",
 ];

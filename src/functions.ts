@@ -1,6 +1,5 @@
 import he from "he";
 import { Browser, chromium, Page } from "playwright";
-import { decode } from "punycode";
 
 // Type for instruction object
 type Instruction = {
@@ -15,7 +14,15 @@ type GraphObject = {
   recipeInstructions: Instruction[];
 };
 
-type RawRecipeData = GraphObject | { "@graph": GraphObject[] };
+type RawRecipeData = GraphObject | { "@graph": GraphObject[] } | GraphObject[];
+
+function findGraphObjectWithRecipeData(inputData: GraphObject[]) {
+  const result = inputData.find((obj: GraphObject) => {
+    return obj["@type"] === "Recipe";
+  });
+
+  return result;
+}
 
 //Function to generate array of recipeInstructions
 function generateStringArray(recipeInstructions: Instruction[]): string[] {
@@ -35,7 +42,9 @@ export function getErrorMessage(error: unknown) {
 
 export const getScrapedRecipe = async (
   url: string
-): Promise<{ ingredients: string[]; instructions: string[] }> => {
+): Promise<
+  { ingredients: string[]; instructions: string[] } | { message: string }
+> => {
   try {
     const browser: Browser = await chromium.launch({
       headless: true,
@@ -79,16 +88,14 @@ export const getScrapedRecipe = async (
     // Parse the correct json string
     const rawRecipeData: RawRecipeData = JSON.parse(scriptWithRecipeData);
 
-    let recipeData: GraphObject | undefined;
+    let recipeData: GraphObject | GraphObject[] | undefined;
 
-    //
     if ("@graph" in rawRecipeData) {
       const graph: GraphObject[] = rawRecipeData["@graph"];
 
-      // Get the recipe object
-      recipeData = graph.find((obj: GraphObject) => {
-        return obj["@type"] === "Recipe";
-      });
+      recipeData = findGraphObjectWithRecipeData(graph);
+    } else if (Array.isArray(rawRecipeData)) {
+      recipeData = findGraphObjectWithRecipeData(rawRecipeData);
     } else {
       recipeData = rawRecipeData;
     }
@@ -107,21 +114,29 @@ export const getScrapedRecipe = async (
     ) {
       instructionsArray = recipeData.recipeInstructions;
     } else {
-      throw new Error("Instructions is not an correct array or it is empty");
+      throw new Error("Instructions is not a correct array, or it is empty");
     }
 
-    if (instructionsArray.length > 0) {
-      if (typeof instructionsArray[0] === "string") {
-        instructionsData = instructionsArray as string[];
-      } else if (typeof instructionsArray[0] === "object") {
-        instructionsData = generateStringArray(instructionsArray);
-      } else {
-        throw new Error(
-          "Instructions must be of either type objects or strings"
-        );
-      }
+    // the array of instructions comes wither as an array of strings,
+    // or as an object which should fall under "HowToStep" or "HowToSection" below
+    // see https://developers.google.com/search/docs/appearance/structured-data/recipe#recipe-properties
+    if (typeof instructionsArray[0] === "string") {
+      instructionsData = instructionsArray as string[];
+    } else if (
+      typeof instructionsArray[0] === "object" &&
+      instructionsArray[0]["@type"] === "HowToSection"
+    ) {
+      instructionsArray.forEach((section) => {
+        const items = generateStringArray(section.itemListElement);
+        instructionsData.push(...items);
+      });
+    } else if (
+      typeof instructionsArray[0] === "object" &&
+      instructionsArray[0]["@type"] === "HowToStep"
+    ) {
+      instructionsData = generateStringArray(instructionsArray);
     } else {
-      throw new Error("Instructions array is empty");
+      throw new Error("Instructions must be of either type objects or strings");
     }
 
     const decodedIngredients: string[] = decodeData(ingredientsData);
@@ -133,6 +148,6 @@ export const getScrapedRecipe = async (
     };
   } catch (error) {
     console.error(error);
-    throw error;
+    return { message: getErrorMessage(error) };
   }
 };
