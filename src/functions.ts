@@ -18,9 +18,7 @@ type GraphObject = {
 type RawRecipeData = GraphObject | { "@graph": GraphObject[] };
 
 //Function to generate array of recipeInstructions
-function generateInstructionsArray(
-  recipeInstructions: Instruction[]
-): string[] {
+function generateStringArray(recipeInstructions: Instruction[]): string[] {
   return recipeInstructions.map((instruction) => instruction.text);
 }
 
@@ -34,8 +32,6 @@ export function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
   return String(error);
 }
-
-//TODO JULIA: Write function for string or object array logic
 
 export const getScrapedRecipe = async (
   url: string
@@ -98,20 +94,42 @@ export const getScrapedRecipe = async (
     }
 
     if (!recipeData) {
-      throw new Error("no recipedata found");
+      throw new Error("no recipe data found");
     }
 
     const ingredientsData = recipeData.recipeIngredient;
-    const instructionsData: string[] = generateInstructionsArray(
-      recipeData.recipeInstructions
-    );
+    let instructionsArray: any[] = []; // Initialize as an array of any type
+    let instructionsData: string[] = [];
 
-    const decodeIngredients: string[] = decodeData(ingredientsData);
-    const decodeInstructions: string[] = decodeData(instructionsData);
+    if (
+      Array.isArray(recipeData.recipeInstructions) &&
+      recipeData.recipeInstructions.length > 0
+    ) {
+      instructionsArray = recipeData.recipeInstructions;
+    } else {
+      throw new Error("Instructions is not an correct array or it is empty");
+    }
+
+    if (instructionsArray.length > 0) {
+      if (typeof instructionsArray[0] === "string") {
+        instructionsData = instructionsArray as string[];
+      } else if (typeof instructionsArray[0] === "object") {
+        instructionsData = generateStringArray(instructionsArray);
+      } else {
+        throw new Error(
+          "Instructions must be of either type objects or strings"
+        );
+      }
+    } else {
+      throw new Error("Instructions array is empty");
+    }
+
+    const decodedIngredients: string[] = decodeData(ingredientsData);
+    const decodedInstructions: string[] = decodeData(instructionsData);
 
     return {
-      ingredients: decodeIngredients,
-      instructions: decodeInstructions,
+      ingredients: decodedIngredients,
+      instructions: decodedInstructions,
     };
   } catch (error) {
     console.error(error);
