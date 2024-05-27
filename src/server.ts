@@ -1,24 +1,24 @@
 import express from "express";
-import { getScrapedRecipe } from "./functions.js";
+import { getScrapedRecipe, getErrorMessage } from "./functions.js";
 
-const app = express();
+const router = express.Router();
 
-app.use(express.json());
+router.post("/recipe", async (req, res) => {
+  try {
+    console.log(req.body);
 
-app.post("/recipe", async (req, res) => {
-  console.log(req.body);
+    const { url } = req.body;
+    if (!url) {
+      throw new Error("URL is required");
+    }
 
-  const { url } = req.body;
-  if (!url) {
-    return res.status(400).send("URL is required");
+    const data = await getScrapedRecipe(url);
+
+    res.send(data);
+  } catch (error) {
+    console.error(error);
+    res.status(400).send({ message: getErrorMessage(error) });
   }
-
-  const data = await getScrapedRecipe(url);
-
-  res.send(data);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-export default app;
+export default router;

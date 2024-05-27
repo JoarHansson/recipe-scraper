@@ -1,5 +1,6 @@
 import he from "he";
 import { Browser, chromium, Page } from "playwright";
+import { decode } from "punycode";
 
 // Type for instruction object
 type Instruction = {
@@ -27,6 +28,14 @@ function generateInstructionsArray(
 function decodeData(data: string[]): string[] {
   return data.map((item: string) => he.decode(item));
 }
+
+// function to use in catch blocks
+export function getErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
+//TODO JULIA: Write function for string or object array logic
 
 export const getScrapedRecipe = async (
   url: string
