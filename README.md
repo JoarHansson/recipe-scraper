@@ -1,5 +1,5 @@
 # recipe-scraper
-This repository contains a group project for the TypeScript assignment at [Yrgo](https://www.yrgo.se/program/webbutvecklare/). The project was carried out by [Julia Göransson](https://github.com/juliasophieG), [Joar Hansson](https://github.com/JoharHansson) and [Siri Sjölin](https://github.com/sirisayshello).
+This repository contains a group project for the TypeScript assignment at [Yrgo](https://www.yrgo.se/program/webbutvecklare/). The project was carried out by [Julia Göransson](https://github.com/juliasophieG), [Joar Hansson](https://github.com/JoarHansson) and [Siri Sjölin](https://github.com/sirisayshello).
 
 Besides TypeScript the tools that are used in the project are NodeJS and Express for the server, and React for the frontend. Additionally, Playwright is used for web scraping. 
 
