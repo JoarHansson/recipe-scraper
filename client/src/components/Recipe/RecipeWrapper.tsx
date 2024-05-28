@@ -42,7 +42,7 @@ export const RecipeWrapper = ({ recipeData, loading }: Props) => {
           }
         ></RecipeCard>
       ) : (
-        message
+        <div>{message}</div>
       )}
     </Wrapper>
   );

@@ -3,6 +3,7 @@ import "./App.css";
 import { Form } from "./components/Form/Form";
 import { RecipeWrapper } from "./components/Recipe/RecipeWrapper";
 import { Header } from "./components/Header/Header";
+import { ErrorContainer } from "./components/Error/ErrorContainer";
 
 export type RecipeData = {
   ingredients?: Ingredients;
@@ -61,7 +62,7 @@ function App() {
       />
 
       {recipeData?.message ? (
-        <p>On no! {recipeData.message}</p>
+        <ErrorContainer errorMessage={recipeData.message} />
       ) : (
         <RecipeWrapper loading={loading} recipeData={recipeData} />
       )}
