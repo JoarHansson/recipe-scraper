@@ -82,7 +82,7 @@ export const getScrapedRecipe = async (
     if (!scriptWithRecipeData) {
       console.log("No application/ld+json scripts");
       throw new Error(
-        "The provided URL does not contain the necessary recipe data"
+        "Oh no! The provided URL does not contain the necessary recipe data."
       );
     }
 
@@ -104,14 +104,14 @@ export const getScrapedRecipe = async (
     if (!recipeData) {
       console.log("recipeData not found");
       throw new Error(
-        "The provided URL does not contain the necessary recipe data"
+        "Oh no! The provided URL does not contain the necessary recipe data."
       );
     }
 
     if (!recipeData.recipeIngredient) {
       console.log("Ingredients array not found");
       throw new Error(
-        "The provided URL does not contain the necessary recipe data"
+        "Oh no! The provided URL does not contain the necessary recipe data."
       );
     }
 
@@ -127,7 +127,7 @@ export const getScrapedRecipe = async (
     } else {
       console.log("Instructions is either not an array, or it is empty");
       throw new Error(
-        "The provided URL does not contain the necessary recipe data"
+        "Oh no! The provided URL does not contain the necessary recipe data."
       );
     }
 
@@ -152,7 +152,7 @@ export const getScrapedRecipe = async (
     } else {
       console.log("Instructions must be of either type objects or strings");
       throw new Error(
-        "The provided URL does not contain the necessary recipe data"
+        "Oh no! The provided URL does not contain the necessary recipe data."
       );
     }
 
