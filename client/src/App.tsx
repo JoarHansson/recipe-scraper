@@ -3,22 +3,18 @@ import "./App.css";
 import { Form } from "./components/Form/Form";
 import { RecipeWrapper } from "./components/Recipe/RecipeWrapper";
 
-export type RecipeData =
-  | undefined
-  | {
-      ingredients?: Ingredients;
-      instructions?: Instructions;
-    }
-  | {
-      message?: string;
-    };
+export type RecipeData = {
+  ingredients?: Ingredients;
+  instructions?: Instructions;
+  message?: string;
+};
 
 type Ingredients = string[];
 
 type Instructions = string[];
 
 function App() {
-  const [recipeData, setRecipeData] = useState<RecipeData>();
+  const [recipeData, setRecipeData] = useState<RecipeData>({});
   const [url, setUrl] = useState<string>();
 
   async function getRecipeData(url?: string) {
@@ -37,7 +33,7 @@ function App() {
 
     const data = await response.json();
 
-    setRecipeData(data as RecipeData);
+    setRecipeData(data);
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,13 +46,15 @@ function App() {
     getRecipeData(url);
   }
 
-  console.log(recipeData?.message);
-
   return (
     <div className="App">
       <h1>Recipe declutter</h1>
       <Form handleInputChange={handleInputChange} handleSubmit={handleSubmit} />
-      <RecipeWrapper recipeData={recipeData} />
+      {recipeData?.message ? (
+        <p>On no! {recipeData.message}</p>
+      ) : (
+        <RecipeWrapper recipeData={recipeData} />
+      )}
     </div>
   );
 }
