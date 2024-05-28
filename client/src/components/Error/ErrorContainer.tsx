@@ -11,10 +11,14 @@ let Container = styled.div({
   minHeight: "50vh",
 });
 
+const ErrorMessage = styled.p({
+  textAlign: "center",
+});
+
 export const ErrorContainer = ({ errorMessage }: Props) => {
   return (
     <Container>
-      <p>{errorMessage}</p>
+      <ErrorMessage>{errorMessage}</ErrorMessage>
     </Container>
   );
 };
