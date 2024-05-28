@@ -4,14 +4,12 @@ import { Browser, chromium, Page } from "playwright";
 // Type for instruction object
 type Instruction = {
   text: string;
-  name?: string;
-  url?: string; // Not always present
 };
 
 type GraphObject = {
   "@type": string | any[];
-  recipeIngredient: string[];
-  recipeInstructions: Instruction[];
+  recipeIngredient?: string[];
+  recipeInstructions?: Instruction[];
 };
 
 type RawRecipeData = GraphObject | { "@graph": GraphObject[] } | GraphObject[];
