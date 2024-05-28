@@ -16,6 +16,7 @@ type Instructions = string[];
 function App() {
   const [recipeData, setRecipeData] = useState<RecipeData>({});
   const [url, setUrl] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   async function getRecipeData(url?: string) {
     const requestOptions = {
@@ -33,6 +34,7 @@ function App() {
 
     const data = await response.json();
 
+    setLoading(false);
     setRecipeData(data);
   }
 
@@ -41,6 +43,7 @@ function App() {
   };
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    setLoading(true);
     event.preventDefault();
     console.log(url);
     getRecipeData(url);
@@ -50,10 +53,11 @@ function App() {
     <div className="App">
       <h1>Recipe declutter</h1>
       <Form handleInputChange={handleInputChange} handleSubmit={handleSubmit} />
+
       {recipeData?.message ? (
         <p>On no! {recipeData.message}</p>
       ) : (
-        <RecipeWrapper recipeData={recipeData} />
+        <RecipeWrapper loading={loading} recipeData={recipeData} />
       )}
     </div>
   );
