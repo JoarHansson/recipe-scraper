@@ -2,7 +2,7 @@ import express from "express";
 import router from "./server.js";
 import path from "path";
 
-const PORT = 3001;
+const PORT = 3000;
 const app = express();
 
 app.use(express.json());
@@ -24,4 +24,4 @@ app.use("*", (req, res) => {
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-module.exports = app;
+export default app;
