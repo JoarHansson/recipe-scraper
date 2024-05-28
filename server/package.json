@@ -5,6 +5,7 @@
   "description": "A recipe web scraping project that uses Typescript.",
   "main": "index.ts",
   "scripts": {
+    "start": "node server/index.ts",
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "watch": "tsx watch src/index.ts"

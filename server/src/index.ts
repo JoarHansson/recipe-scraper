@@ -1,8 +1,9 @@
 import express from "express";
 import router from "./server.js";
+import path from "path";
 
+const PORT = 3001;
 const app = express();
-const PORT = 3000;
 
 app.use(express.json());
 
