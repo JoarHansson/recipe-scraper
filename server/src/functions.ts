@@ -1,26 +1,29 @@
 import he from "he";
 import { Browser, chromium, Page } from "playwright";
-import { decode } from "punycode";
 
 // Type for instruction object
 type Instruction = {
   text: string;
-  name?: string;
-  url?: string; // Not always present
 };
 
 type GraphObject = {
   "@type": string | any[];
-  recipeIngredient: string[];
-  recipeInstructions: Instruction[];
+  recipeIngredient?: string[];
+  recipeInstructions?: Instruction[];
 };
 
-type RawRecipeData = GraphObject | { "@graph": GraphObject[] };
+type RawRecipeData = GraphObject | { "@graph": GraphObject[] } | GraphObject[];
+
+function findGraphObjectWithRecipeData(inputData: GraphObject[]) {
+  const result = inputData.find((obj: GraphObject) => {
+    return obj["@type"] === "Recipe";
+  });
+
+  return result;
+}
 
 //Function to generate array of recipeInstructions
-function generateInstructionsArray(
-  recipeInstructions: Instruction[]
-): string[] {
+function generateStringArray(recipeInstructions: Instruction[]): string[] {
   return recipeInstructions.map((instruction) => instruction.text);
 }
 
@@ -35,11 +38,11 @@ export function getErrorMessage(error: unknown) {
   return String(error);
 }
 
-//TODO JULIA: Write function for string or object array logic
-
 export const getScrapedRecipe = async (
   url: string
-): Promise<{ ingredients: string[]; instructions: string[] }> => {
+): Promise<
+  { ingredients: string[]; instructions: string[] } | { message: string }
+> => {
   try {
     const browser: Browser = await chromium.launch({
       headless: true,
@@ -83,38 +86,66 @@ export const getScrapedRecipe = async (
     // Parse the correct json string
     const rawRecipeData: RawRecipeData = JSON.parse(scriptWithRecipeData);
 
-    let recipeData: GraphObject | undefined;
+    let recipeData: GraphObject | GraphObject[] | undefined;
 
-    //
     if ("@graph" in rawRecipeData) {
       const graph: GraphObject[] = rawRecipeData["@graph"];
 
-      // Get the recipe object
-      recipeData = graph.find((obj: GraphObject) => {
-        return obj["@type"] === "Recipe";
-      });
+      recipeData = findGraphObjectWithRecipeData(graph);
+    } else if (Array.isArray(rawRecipeData)) {
+      recipeData = findGraphObjectWithRecipeData(rawRecipeData);
     } else {
       recipeData = rawRecipeData;
     }
 
     if (!recipeData) {
-      throw new Error("no recipedata found");
+      throw new Error("no recipe data found");
     }
 
     const ingredientsData = recipeData.recipeIngredient;
-    const instructionsData: string[] = generateInstructionsArray(
-      recipeData.recipeInstructions
-    );
+    let instructionsArray: any[] = []; // Initialize as an array of any type
+    let instructionsData: string[] = [];
 
-    const decodeIngredients: string[] = decodeData(ingredientsData);
-    const decodeInstructions: string[] = decodeData(instructionsData);
+    if (
+      Array.isArray(recipeData.recipeInstructions) &&
+      recipeData.recipeInstructions.length > 0
+    ) {
+      instructionsArray = recipeData.recipeInstructions;
+    } else {
+      throw new Error("Instructions is not a correct array, or it is empty");
+    }
+
+    // the array of instructions comes wither as an array of strings,
+    // or as an object which should fall under "HowToStep" or "HowToSection" below
+    // see https://developers.google.com/search/docs/appearance/structured-data/recipe#recipe-properties
+    if (typeof instructionsArray[0] === "string") {
+      instructionsData = instructionsArray as string[];
+    } else if (
+      typeof instructionsArray[0] === "object" &&
+      instructionsArray[0]["@type"] === "HowToSection"
+    ) {
+      instructionsArray.forEach((section) => {
+        const items = generateStringArray(section.itemListElement);
+        instructionsData.push(...items);
+      });
+    } else if (
+      typeof instructionsArray[0] === "object" &&
+      instructionsArray[0]["@type"] === "HowToStep"
+    ) {
+      instructionsData = generateStringArray(instructionsArray);
+    } else {
+      throw new Error("Instructions must be of either type objects or strings");
+    }
+
+    const decodedIngredients: string[] = decodeData(ingredientsData);
+    const decodedInstructions: string[] = decodeData(instructionsData);
 
     return {
-      ingredients: decodeIngredients,
-      instructions: decodeInstructions,
+      ingredients: decodedIngredients,
+      instructions: decodedInstructions,
     };
   } catch (error) {
     console.error(error);
-    throw error;
+    return { message: getErrorMessage(error) };
   }
 };
