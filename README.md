@@ -25,4 +25,4 @@ $ npm install
 $ npm run dev
 ```
 
-Now go to the client's url to test the application.
+Now go to the client's url to test the application. Happy scraping!
