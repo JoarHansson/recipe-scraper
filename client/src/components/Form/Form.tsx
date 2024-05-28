@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 const FormWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  width: 100%;
   align-items: center;
 `;
 
