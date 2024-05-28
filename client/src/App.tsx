@@ -17,7 +17,6 @@ function App() {
   const [recipeData, setRecipeData] = useState<RecipeData>({});
   const [url, setUrl] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-
   async function getRecipeData(url?: string) {
     const requestOptions = {
       method: "POST",
@@ -47,12 +46,18 @@ function App() {
     event.preventDefault();
     console.log(url);
     getRecipeData(url);
+    setUrl("");
+    setRecipeData({});
   }
 
   return (
     <div className="App">
       <h1>Recipe declutter</h1>
-      <Form handleInputChange={handleInputChange} handleSubmit={handleSubmit} />
+      <Form
+        url={url}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+      />
 
       {recipeData?.message ? (
         <p>On no! {recipeData.message}</p>
