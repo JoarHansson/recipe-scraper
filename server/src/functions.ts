@@ -102,6 +102,10 @@ export const getScrapedRecipe = async (
       throw new Error("no recipe data found");
     }
 
+    if (!recipeData.recipeIngredient) {
+      throw new Error("no ingredients data found");
+    }
+
     const ingredientsData = recipeData.recipeIngredient;
     let instructionsArray: any[] = []; // Initialize as an array of any type
     let instructionsData: string[] = [];
