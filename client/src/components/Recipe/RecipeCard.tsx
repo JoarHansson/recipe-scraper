@@ -2,27 +2,20 @@ import styled from "@emotion/styled";
 
 const Wrapper = styled.div({
   "@media (min-width: 1100px)": {
-    flexDirection: "row",
-    maxWidth: "1200px",
+    display: "grid",
+    gridTemplateColumns: "1fr 2fr",
     padding: "2rem",
   },
+  padding: "1rem",
   display: "flex",
   flexDirection: "column",
   gap: "2rem",
-  maxWidth: "800px",
+  maxWidth: "1000px",
 });
 
-const IngredientsDiv = styled.div({
-  "@media (min-width: 1100px)": {
-    width: "50%",
-  },
-});
+const IngredientsDiv = styled.div({});
 
-const InstructionsDiv = styled.div({
-  "@media (min-width: 1100px)": {
-    width: "50%",
-  },
-});
+const InstructionsDiv = styled.div({});
 
 const StyledOl = styled.ol({
   display: "flex",
