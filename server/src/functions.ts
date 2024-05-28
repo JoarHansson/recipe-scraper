@@ -80,7 +80,10 @@ export const getScrapedRecipe = async (
     });
 
     if (!scriptWithRecipeData) {
-      throw new Error("no application/ld+json scripts");
+      console.log("No application/ld+json scripts");
+      throw new Error(
+        "The provided URL does not contain the necessary recipe data"
+      );
     }
 
     // Parse the correct json string
@@ -99,11 +102,17 @@ export const getScrapedRecipe = async (
     }
 
     if (!recipeData) {
-      throw new Error("no recipe data found");
+      console.log("recipeData not found");
+      throw new Error(
+        "The provided URL does not contain the necessary recipe data"
+      );
     }
 
     if (!recipeData.recipeIngredient) {
-      throw new Error("no ingredients data found");
+      console.log("Ingredients array not found");
+      throw new Error(
+        "The provided URL does not contain the necessary recipe data"
+      );
     }
 
     const ingredientsData = recipeData.recipeIngredient;
@@ -116,7 +125,10 @@ export const getScrapedRecipe = async (
     ) {
       instructionsArray = recipeData.recipeInstructions;
     } else {
-      throw new Error("Instructions is not a correct array, or it is empty");
+      console.log("Instructions is either not an array, or it is empty");
+      throw new Error(
+        "The provided URL does not contain the necessary recipe data"
+      );
     }
 
     // the array of instructions comes wither as an array of strings,
@@ -138,7 +150,10 @@ export const getScrapedRecipe = async (
     ) {
       instructionsData = generateStringArray(instructionsArray);
     } else {
-      throw new Error("Instructions must be of either type objects or strings");
+      console.log("Instructions must be of either type objects or strings");
+      throw new Error(
+        "The provided URL does not contain the necessary recipe data"
+      );
     }
 
     const decodedIngredients: string[] = decodeData(ingredientsData);
