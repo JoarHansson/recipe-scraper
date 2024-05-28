@@ -1,14 +1,21 @@
 type Props = {
+  url: string | undefined;
   handleInputChange: React.ChangeEventHandler<HTMLInputElement>;
   handleSubmit: React.FormEventHandler<HTMLFormElement>;
 };
 
-export const Form = ({ handleInputChange, handleSubmit }: Props) => {
+export const Form = ({ url, handleInputChange, handleSubmit }: Props) => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
         <label htmlFor="urlInput">Paste your url here</label>
-        <input onChange={handleInputChange} id="urlInput" type="url" />
+        <input
+          value={url || ""}
+          onChange={handleInputChange}
+          id="urlInput"
+          type="url"
+          placeholder="https://www.recipe.com"
+        />
       </div>
       <button type="submit">Submit</button>
     </form>
