@@ -7,7 +7,7 @@ let Wrapper = styled.div({
 export const Header = () => {
   return (
     <Wrapper>
-      <h1>Recipe declutter</h1>
+      <h1>Recipe Declutter</h1>
     </Wrapper>
   );
 };
