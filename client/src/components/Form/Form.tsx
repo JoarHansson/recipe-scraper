@@ -43,7 +43,7 @@ const InputField = styled.input`
     border-color: #1a1a1a;
     transition: border-color 0.3s;
     @media (prefers-color-scheme: dark) {
-      border-color: transparent;
+      border-color: #525252;
     }
   }
 `;
