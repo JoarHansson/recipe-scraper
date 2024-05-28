@@ -8,6 +8,9 @@ export type RecipeData =
   | {
       ingredients?: Ingredients;
       instructions?: Instructions;
+    }
+  | {
+      message?: string;
     };
 
 type Ingredients = string[];
@@ -15,7 +18,7 @@ type Ingredients = string[];
 type Instructions = string[];
 
 function App() {
-  const [data, setData] = useState<RecipeData>();
+  const [recipeData, setRecipeData] = useState<RecipeData>();
   const [url, setUrl] = useState<string>();
 
   async function getRecipeData(url?: string) {
@@ -34,10 +37,8 @@ function App() {
 
     const data = await response.json();
 
-    setData(data);
+    setRecipeData(data as RecipeData);
   }
-
-  let recipeData: RecipeData = data;
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUrl(event.target.value);
@@ -48,6 +49,8 @@ function App() {
     console.log(url);
     getRecipeData(url);
   }
+
+  console.log(recipeData?.message);
 
   return (
     <div className="App">
