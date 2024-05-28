@@ -3,7 +3,12 @@ import { RecipeCard } from "./RecipeCard";
 import styled from "@emotion/styled";
 
 let Wrapper = styled.section({
-  background: "hotpink",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  minHeight: "50vh",
+  padding: "1rem",
 });
 
 type Props = {
@@ -15,7 +20,7 @@ export const RecipeWrapper = ({ recipeData, loading }: Props) => {
   let ingredients = recipeData?.ingredients;
   let instructions = recipeData?.instructions;
 
-  let message = loading ? "Loading..." : "Go get that recipe!";
+  let message = loading ? "Fetching recipe..." : "Go get that recipe!";
 
   return (
     <Wrapper>

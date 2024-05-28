@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import { Form } from "./components/Form/Form";
 import { RecipeWrapper } from "./components/Recipe/RecipeWrapper";
+import { Header } from "./components/Header/Header";
 
 export type RecipeData = {
   ingredients?: Ingredients;
@@ -52,7 +53,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Recipe declutter</h1>
+      <Header />
       <Form
         url={url}
         handleInputChange={handleInputChange}
