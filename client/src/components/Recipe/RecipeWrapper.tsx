@@ -1,5 +1,10 @@
 import { RecipeData } from "../../App";
 import { RecipeCard } from "./RecipeCard";
+import styled from "@emotion/styled";
+
+let Wrapper = styled.section({
+  background: "hotpink",
+});
 
 type Props = {
   recipeData: RecipeData;
@@ -13,7 +18,7 @@ export const RecipeWrapper = ({ recipeData, loading }: Props) => {
   let message = loading ? "Loading..." : "Go get that recipe!";
 
   return (
-    <section>
+    <Wrapper>
       {Object.keys(recipeData).length > 0 ? (
         <RecipeCard
           ingredients={
@@ -27,13 +32,13 @@ export const RecipeWrapper = ({ recipeData, loading }: Props) => {
             !recipeData
               ? "Loading..."
               : instructions?.map((instruction) => (
-                  <ol key={instruction}>{instruction}</ol>
+                  <li key={instruction}>{instruction}</li>
                 ))
           }
         ></RecipeCard>
       ) : (
         message
       )}
-    </section>
+    </Wrapper>
   );
 };
