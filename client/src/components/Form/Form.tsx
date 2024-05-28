@@ -17,6 +17,9 @@ const FormElement = styled.form`
   padding: 2rem 0;
   max-width: 500px;
   width: 90%;
+  @media (prefers-color-scheme: dark) {
+    background-color: #1c1c1c;
+  }
 `;
 
 const InputWrapper = styled.div`
@@ -33,9 +36,15 @@ const InputField = styled.input`
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 3px;
+  @media (prefers-color-scheme: dark) {
+    border: 1px solid transparent;
+  }
   &:hover {
     border-color: #1a1a1a;
     transition: border-color 0.3s;
+    @media (prefers-color-scheme: dark) {
+      border-color: transparent;
+    }
   }
 `;
 
