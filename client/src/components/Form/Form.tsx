@@ -8,7 +8,7 @@ export const Form = ({ handleInputChange, handleSubmit }: Props) => {
     <form onSubmit={handleSubmit}>
       <div>
         <label htmlFor="urlInput">Paste your url here</label>
-        <input onChange={handleInputChange} id="urlInput" type="text" />
+        <input onChange={handleInputChange} id="urlInput" type="url" />
       </div>
       <button type="submit">Submit</button>
     </form>
