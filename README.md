@@ -1,26 +1,28 @@
 # recipe-scraper
-A recipe web scraping project that uses Typescript.
+This repository contains a group project for the TypeScript assignment at [Yrgo](https://www.yrgo.se/program/webbutvecklare/). The project was carried out by Julia Göransson, Joar Hansson and Siri Sjölin.  
 
-A short description about the project and/or client.
+Besides TypeScript the tools that are used in the project are NodeJS and Express for the server, and React for the frontend. Additionally, Playwright is used for web scraping. 
 
-## Getting Started
+### Introduction
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-The things you need before installing the software.
-
-* You need this
-* And you need this
-* Oh, and don't forget this
+Our group has grown tired of navigating lengthy online recipes filled with pictures, ads, and long-winded explanations about why a certain recipe is the best. This makes it difficult to get started and requires constant scrolling between ingredients and instructions. To address this frustration, we decided to use web scraping to extract only the essential information from recipes.
 
 ### Installation
 
 A step by step guide that will tell you how to get the development environment up and running.
 
 ```
-$ First step
-$ Another step
-$ Final step
+$ cd server
+$ npm install
+$ npm run dev
 ```
+
+Keep the server running and open another terminal window in the project root:
+
+```
+$ cd client
+$ npm install
+$ npm run dev
+```
+
+Now go to the client's url to test the application.
