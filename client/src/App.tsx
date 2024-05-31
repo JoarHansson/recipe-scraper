@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEffect } from "react";
 import "./App.css";
 import { Form } from "./components/Form/Form";
 import { RecipeWrapper } from "./components/Recipe/RecipeWrapper";
@@ -12,13 +13,14 @@ export type RecipeData = {
 };
 
 type Ingredients = string[];
-
 type Instructions = string[];
 
 function App() {
   const [recipeData, setRecipeData] = useState<RecipeData>({});
   const [url, setUrl] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [confetti, setConfetti] = useState<boolean>(false);
+
   async function getRecipeData(url?: string) {
     const requestOptions = {
       method: "POST",
@@ -52,6 +54,14 @@ function App() {
     setRecipeData({});
   }
 
+  useEffect(() => {
+    if (recipeData.ingredients && recipeData.instructions) {
+      setConfetti(true);
+    } else {
+      setConfetti(false);
+    }
+  }, [recipeData]);
+
   return (
     <div className="App">
       <Header />
@@ -64,7 +74,11 @@ function App() {
       {recipeData?.message ? (
         <ErrorContainer errorMessage={recipeData.message} />
       ) : (
-        <RecipeWrapper loading={loading} recipeData={recipeData} />
+        <RecipeWrapper
+          loading={loading}
+          recipeData={recipeData}
+          confetti={confetti}
+        />
       )}
     </div>
   );
