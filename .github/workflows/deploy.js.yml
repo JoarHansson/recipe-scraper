@@ -16,9 +16,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm i
-        working-directory: server
-      - name: Build
-        run: npm run build
-        working-directory: server
+      - run: |
+          cd server
+          npm i
+          npm run build
+          pm2 stop 0
+          pm2 start 0
+          pm2 save
+          sudo service nginx restart
